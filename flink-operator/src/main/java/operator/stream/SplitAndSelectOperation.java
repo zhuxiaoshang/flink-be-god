@@ -14,6 +14,7 @@ import java.util.List;
 
 /**
  * split/select算子，split可以把一个流分成多个流，通过select选择具体哪个流，已经废弃
+ * DataStream → SplitStream → DataStream
  */
 public class SplitAndSelectOperation {
 
