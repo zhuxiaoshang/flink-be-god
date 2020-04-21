@@ -14,7 +14,7 @@ import org.apache.flink.util.Collector;
 import javax.annotation.Nullable;
 
 /**
- * cogroup算子，类似于join,join是inner join，cogroup可以实现inner/left/right/inner join
+ * cogroup算子，类似于join,join是inner join，cogroup可以实现inner/left/right/full out join
  * 窗口内包含两边流的迭代器
  * DataStream,DataStream → DataStream
  */
