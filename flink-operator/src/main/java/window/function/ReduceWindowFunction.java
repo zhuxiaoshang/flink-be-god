@@ -3,6 +3,7 @@ package window.function;
 /**
  * 基于window的reduce function，和普通reduce类似
  * fold function同理
+ * https://ci.apache.org/projects/flink/flink-docs-release-1.10/dev/stream/operators/windows.html#foldfunction
  */
 public class ReduceWindowFunction {
     /**

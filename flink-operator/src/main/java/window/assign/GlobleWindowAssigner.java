@@ -14,7 +14,7 @@ import window.datasource.SourceGenerator;
 
 /**
  * globle窗口，把所有数据都放一个窗口内处理，需要自定义触发器来触发计算
- * CountWindow就是用的GlobalWindow实现
+ * CountWindow就是基于GlobalWindow实现
  */
 public class GlobleWindowAssigner {
     public static void main(String[] args) throws Exception {
