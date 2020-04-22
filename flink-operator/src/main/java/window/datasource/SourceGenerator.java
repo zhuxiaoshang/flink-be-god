@@ -35,10 +35,10 @@ public class SourceGenerator extends RichParallelSourceFunction<Tuple3<String, I
     @Override
     public void run(SourceContext<Tuple3<String, Integer, Long>> ctx) throws Exception {
         Tuple3<String, Integer, Long>[] elements = new Tuple3[]{
-                Tuple3.of("k1", 11, 1587314572000L), Tuple3.of("k2", 2, 1587314574000L)
-                , Tuple3.of("k3", 3, 1587314576000L), Tuple3.of("k2", 5, 1587314575000L)
-                , Tuple3.of("k3", 10, 1587314577000L), Tuple3.of("k1", 9, 1587314579000L)
-                ,Tuple3.of("k4", 9, 1587314581000L)
+                 Tuple3.of("k2", 2, 1587314574000L)
+                , Tuple3.of("k3", 3, 1587314576000L), Tuple3.of("k2", 5, 1587314575000L),Tuple3.of("k1", 9, 1587314572000L)
+                , Tuple3.of("k3", 13, 1587314577000L), Tuple3.of("k1", 15, 1587314579000L)
+                ,Tuple3.of("k4", 20, 1587314581000L)
         };
         for (Tuple3 t:elements
         ) {
