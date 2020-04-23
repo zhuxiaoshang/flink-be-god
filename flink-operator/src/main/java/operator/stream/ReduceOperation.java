@@ -5,7 +5,7 @@ import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /**
- * reduce算子，一半跟keyby结合使用，一半用来求和、求最值等
+ * reduce算子，一般跟keyby结合使用，用来求和、求最值等
  * KeyedStream → DataStream
  */
 public class ReduceOperation {

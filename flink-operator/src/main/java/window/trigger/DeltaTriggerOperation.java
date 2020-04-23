@@ -20,6 +20,7 @@ import org.apache.flink.streaming.api.windowing.triggers.PurgingTrigger;
 import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
 import org.apache.flink.util.Collector;
 import window.datasource.SourceGenerator;
+import window.function.ApplyAllWindowFunction;
 import window.function.ApplyWindowFunction;
 
 import javax.annotation.Nullable;
@@ -51,13 +52,7 @@ public class DeltaTriggerOperation {
             public double getDelta(Tuple3<String, Integer, Long> oldDataPoint, Tuple3<String, Integer, Long> newDataPoint) {
                 return newDataPoint.f1 - oldDataPoint.f1;
             }
-        }, src.getType().createSerializer(env.getConfig())))).apply(new AllWindowFunction<Tuple3<String, Integer, Long>, Object, TimeWindow>() {
-            @Override
-            public void apply(TimeWindow window, Iterable<Tuple3<String, Integer, Long>> values, Collector<Object> out) throws Exception {
-                System.out.println("窗口开始时间=" + window.getStart() + ",结束时间=" + window.getEnd());
-                System.out.println("窗口内数据=" + values);
-            }
-        }).print();
+        }, src.getType().createSerializer(env.getConfig())))).apply(new ApplyAllWindowFunction()).print();
         env.execute();
         /**
          * 窗口开始时间=1587314560000,结束时间=1587314580000
