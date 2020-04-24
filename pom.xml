@@ -33,6 +33,12 @@
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-runtime_2.11</artifactId>
             <version>${flink-version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -79,6 +85,12 @@
             <artifactId>flink-table-planner-blink_2.11</artifactId>
             <version>${flink-version}</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>commons-configuration</groupId>
