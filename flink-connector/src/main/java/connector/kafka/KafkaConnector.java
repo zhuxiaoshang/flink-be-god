@@ -12,7 +12,7 @@ import java.util.Properties;
  * kafka connector,支持source/sink
  * https://ci.apache.org/projects/flink/flink-docs-release-1.10/dev/connectors/kafka.html
  */
-public class KafkaSourceConnector {
+public class KafkaConnector {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(2);
