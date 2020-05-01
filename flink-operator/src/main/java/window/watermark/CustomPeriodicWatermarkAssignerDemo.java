@@ -14,9 +14,9 @@ import window.function.ApplyWindowFunction;
 import javax.annotation.Nullable;
 
 /**
- * 自定义水印生成
+ * 自定义周期水印生成
  */
-public class CustomWatermarkAssignerDemo {
+public class CustomPeriodicWatermarkAssignerDemo {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);

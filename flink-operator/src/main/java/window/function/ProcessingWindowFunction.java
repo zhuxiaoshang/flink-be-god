@@ -14,6 +14,8 @@ public class ProcessingWindowFunction extends ProcessWindowFunction<Tuple3<Strin
         TimeWindow> {
     @Override
     public void process(Tuple tuple, Context context, Iterable<Tuple3<String, Integer, Long>> elements, Collector<Object> out) throws Exception {
+        context.globalState();
+        context.windowState();
         //do something
         System.out.println("窗口开始时间=" + context.window().getStart() + ",结束时间=" + context.window().getEnd());
         System.out.println("key = " + tuple);
