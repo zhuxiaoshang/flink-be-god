@@ -2,15 +2,26 @@ package connector.filesystem;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.common.serialization.SimpleStringEncoder;
+import org.apache.flink.configuration.GlobalConfiguration;
 import org.apache.flink.core.fs.Path;
+import org.apache.flink.formats.sequencefile.SequenceFileWriterFactory;
+import org.apache.flink.runtime.util.HadoopUtils;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.SingleOutputStreamOperator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink;
 import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.OnCheckpointRollingPolicy;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
+import org.apache.flink.streaming.connectors.fs.StringWriter;
+import org.apache.flink.streaming.connectors.fs.bucketing.BucketingSink;
+import org.apache.flink.streaming.connectors.fs.bucketing.DateTimeBucketer;
 import org.apache.flink.util.Collector;
+import org.apache.hadoop.conf.Configuration;
 
+
+/**
+ * 写入hdfs，
+ */
 public class HdfsFileConnector {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
@@ -19,7 +30,7 @@ public class HdfsFileConnector {
             @Override
             public void run(SourceContext<String> ctx) throws Exception {
                 while (true) {
-                    ctx.collect("sdfsf fdsfsf");
+                    ctx.collect("sdfsf ttttt");
                     Thread.sleep(1000);
                 }
             }
@@ -38,23 +49,22 @@ public class HdfsFileConnector {
                 }
             }
         });
-        map.addSink(StreamingFileSink.forRowFormat(new Path("/Users/zhushang/Desktop/software/"),
-                new SimpleStringEncoder<String>("UTF-8")).withBucketCheckInterval(1000L)
-                //滚动策略，依赖checkpoint，完成checkpoint后生成新文件，格式part-subtask-fileindex,可以设置前缀后缀
-                .withRollingPolicy(OnCheckpointRollingPolicy.build())
-                .build()).setParallelism(1);
+//        BucketingSink<String> sink = new BucketingSink<String>("hdfs://namenode:8020/tmp/zs");
+//        sink.setBucketer(new DateTimeBucketer<>("yyyy-MM-dd--HHmm", ZoneId.of("Asia/Shanghai")));
+//        sink.setWriter(new StringWriter<>());
+//        sink.setBatchSize(1024 * 1024 * 400); // this is 400 MB,
+//        sink.setBatchRolloverInterval(20 * 60 * 1000); // this is 20 mins
+
+
+//        Configuration hadoopConf = HadoopUtils.getHadoopConfiguration(GlobalConfiguration.loadConfiguration());
+        map.addSink(StreamingFileSink.forRowFormat(new Path("hdfs://namenode:8020/tmp/zs"), new SimpleStringEncoder<String>("UTF-8")).build());
+
+//        map.addSink(StreamingFileSink.forBulkFormat(new Path("hdfs://namenode:8020/tmp/zs"),
+//                new SequenceFileWriterFactory(hadoopConf, String.class, String.class)).withBucketCheckInterval(1000L)
+//                //滚动策略，依赖checkpoint，完成checkpoint后生成新文件，格式part-subtask-fileindex,可以设置前缀后缀
+//                .withRollingPolicy(OnCheckpointRollingPolicy.build())
+//                .build()).setParallelism(1);
         env.execute();
-        /**
-         * 默认一个小时生成一个文件夹 格式：2020-05-01--17
-         * zhushangdeMacBook-Pro:2020-05-01--17 zhushang$ ls -l
-         * total 56
-         * -rw-r--r--  1 zhushang  staff   65  5  1 17:50 part-0-0
-         * -rw-r--r--  1 zhushang  staff  130  5  1 17:50 part-0-1
-         * -rw-r--r--  1 zhushang  staff  130  5  1 17:50 part-0-2
-         * -rw-r--r--  1 zhushang  staff  130  5  1 17:50 part-0-3
-         * -rw-r--r--  1 zhushang  staff  130  5  1 17:51 part-0-4
-         * -rw-r--r--  1 zhushang  staff  130  5  1 17:51 part-0-5
-         * -rw-r--r--  1 zhushang  staff  130  5  1 17:51 part-0-6
-         */
+
     }
 }
