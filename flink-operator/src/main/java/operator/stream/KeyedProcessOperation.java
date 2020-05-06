@@ -1,8 +1,13 @@
 package operator.stream;
 
+import org.apache.flink.api.common.state.ListState;
+import org.apache.flink.api.common.state.ListStateDescriptor;
+import org.apache.flink.api.common.typeinfo.TypeHint;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.api.java.tuple.Tuple3;
+import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.TimeDomain;
 import org.apache.flink.streaming.api.TimerService;
 import org.apache.flink.streaming.api.datastream.DataStreamSource;
@@ -27,6 +32,15 @@ public class KeyedProcessOperation {
             }
         }).keyBy(0)//可以用0或t->t.f0
                 .process(new KeyedProcessFunction<Tuple, Tuple3<String, Integer, Long>, Object>() {
+                    ListState<Tuple3<String, Integer, Long>> listState;
+
+                    @Override
+                    public void open(Configuration parameters) throws Exception {
+                        listState = getRuntimeContext().getListState(new ListStateDescriptor<Tuple3<String, Integer, Long>>("list"
+                        , TypeInformation.of(new TypeHint<Tuple3<String, Integer, Long>>() {
+                                })));
+                    }
+
                     /**
                      * Called when a timer set using {@link TimerService} fires.
                      *
@@ -41,11 +55,13 @@ public class KeyedProcessOperation {
                     @Override
                     public void onTimer(long timestamp, OnTimerContext ctx, Collector<Object> out) throws Exception {
                         System.out.println("定时器触发，timestamp="+timestamp+",current key = "+ctx.getCurrentKey()+",");
+                        listState.clear();
                     }
 
                     @Override
                     public void processElement(Tuple3<String, Integer, Long> value, Context ctx, Collector<Object> out) throws Exception {
                         System.out.println("当前元素："+value+",timestamp="+ctx.timestamp());
+                        listState.add(value);
                         ctx.timerService().registerEventTimeTimer(value.f2+5000L);
                     }
                 }).print();
