@@ -20,12 +20,12 @@
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-jdbc-client</artifactId>
-            <version>3.5.2</version>
+            <version>3.5.4</version>
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
-            <version>3.5.2</version>
+            <version>3.5.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.flink</groupId>

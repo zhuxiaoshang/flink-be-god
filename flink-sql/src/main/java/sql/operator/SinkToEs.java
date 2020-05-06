@@ -4,23 +4,21 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.java.StreamTableEnvironment;
-import org.apache.flink.types.Row;
+import sql.sink.ESSink;
 import sql.source.KafkaSource;
 
-/**
- * 普通groupby聚合，retract流
- */
-public class GroupByOperation {
+public class SinkToEs {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         EnvironmentSettings settings = EnvironmentSettings.newInstance().useBlinkPlanner().build();
         StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env, settings);
-        KafkaSource.getKafkaSource(tableEnv);
-        Table table1 = tableEnv.sqlQuery("SELECT behavior, COUNT(*)\n" +
+        KafkaSource.getKafkaSource(tableEnv);//create kafka source table user_behavior
+        ESSink.getEsSink1(tableEnv);//create es sink table buy_cnt_per_hour
+        Table table1 = tableEnv.sqlQuery("SELECT HOUR(TUMBLE_START(ts, INTERVAL '1' HOUR)), COUNT(*)\n" +
                 "FROM user_behavior\n" +
-                "GROUP BY behavior");
-        //group by是个retract流，聚合结果不断更新
-        tableEnv.toRetractStream(table1, Row.class).print();
+                "WHERE behavior = 'buy'\n" +
+                "GROUP BY TUMBLE(ts, INTERVAL '1' HOUR)");
+        table1.insertInto("buy_cnt_per_hour");
         env.execute();
     }
 }
