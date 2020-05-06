@@ -5,7 +5,6 @@ import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.java.StreamTableEnvironment;
 import org.apache.flink.types.Row;
-import pojo.Behavior;
 import sql.source.KafkaSource;
 
 public class SelectOperation {
@@ -14,7 +13,7 @@ public class SelectOperation {
         //以后版本会将old planner移除
         EnvironmentSettings settings = EnvironmentSettings.newInstance().useBlinkPlanner().build();
         StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env, settings);
-        KafkaSource.getSourceTable(tableEnv);
+        KafkaSource.getKafkaSource(tableEnv);
         Table table1 = tableEnv.sqlQuery("select user_id,item_id,category_id,behavior,ts," +
                 "proctime from user_behavior where behavior='buy'");
 //        tableEnv.toAppendStream(table1, Behavior.class).print();

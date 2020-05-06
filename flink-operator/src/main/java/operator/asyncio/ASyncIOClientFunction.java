@@ -10,6 +10,7 @@ import io.vertx.ext.sql.ResultSet;
 import io.vertx.ext.sql.SQLClient;
 import io.vertx.ext.sql.SQLConnection;
 import org.apache.flink.configuration.Configuration;
+import org.apache.flink.streaming.api.functions.async.AsyncFunction;
 import org.apache.flink.streaming.api.functions.async.ResultFuture;
 import org.apache.flink.streaming.api.functions.async.RichAsyncFunction;
 
@@ -19,12 +20,12 @@ import java.util.List;
 /**
  * 使用mysql异步客户端方式
  */
-public class ASyncIOClientFunction extends RichAsyncFunction<StoreInfo, StoreInfo> {
+public class ASyncIOClientFunction extends RichAsyncFunction<CategoryInfo, CategoryInfo> {
     private transient SQLClient mySQLClient;
     private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    private static final String URL = "jdbc:mysql://xxxx";
-    private static final String USER = "xxxx";
-    private static final String PASSWORD = "xxxx";
+    private static final String URL = "jdbc:mysql://localhost:3306/flink";
+    private static final String USER = "root";
+    private static final String PASSWORD = "123456";
 
     @Override
     public void open(Configuration parameters) throws Exception {
@@ -50,7 +51,7 @@ public class ASyncIOClientFunction extends RichAsyncFunction<StoreInfo, StoreInf
     }
 
     @Override
-    public void asyncInvoke(StoreInfo input, ResultFuture<StoreInfo> resultFuture) throws Exception {
+    public void asyncInvoke(CategoryInfo input, ResultFuture<CategoryInfo> resultFuture) throws Exception {
 
         mySQLClient.getConnection(new Handler<AsyncResult<SQLConnection>>() {
             @Override
@@ -59,16 +60,16 @@ public class ASyncIOClientFunction extends RichAsyncFunction<StoreInfo, StoreInf
                     return;
                 }
                 SQLConnection connection = sqlConnectionAsyncResult.result();
-                connection.query("select str_cd,crf_str_cd,crf_str_nm from t_shp_crf_str_cfg_ed_a where str_cd " +
-                        "='" + input.getStrCd() + "';", new Handler<AsyncResult<ResultSet>>() {
+                connection.query("select sub_category_id,parent_category_id from category where sub_category_id " +
+                        "='" + input.getSubCategoryId() + "';", new Handler<AsyncResult<ResultSet>>() {
                     @Override
                     public void handle(AsyncResult<ResultSet> resultSetAsyncResult) {
                         if (resultSetAsyncResult.succeeded()) {
                             List<JsonObject> rows = resultSetAsyncResult.result().getRows();
                             for (JsonObject jo :
                                     rows) {
-                                resultFuture.complete(Collections.singletonList(new StoreInfo(jo.getString("str_cd"),
-                                        jo.getString("crf_str_nm")
+                                resultFuture.complete(Collections.singletonList(new CategoryInfo(jo.getLong("sub_category_id"),
+                                        jo.getLong("parent_category_id")
                                 )));
 
                             }
@@ -77,5 +78,19 @@ public class ASyncIOClientFunction extends RichAsyncFunction<StoreInfo, StoreInf
                 });
             }
         });
+    }
+
+    /**
+     * {@link AsyncFunction#asyncInvoke} timeout occurred.
+     * By default, the result future is exceptionally completed with a timeout exception.
+     *
+     * @param input        element coming from an upstream task
+     * @param resultFuture to be completed with the result data
+     */
+    @Override
+    public void timeout(CategoryInfo input, ResultFuture<CategoryInfo> resultFuture) throws Exception {
+        System.out.println("async call time out!");
+        input.setParentCategoryId(Long.MIN_VALUE);
+        resultFuture.complete(Collections.singleton(input));
     }
 }
