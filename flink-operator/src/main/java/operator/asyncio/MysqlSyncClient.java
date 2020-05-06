@@ -5,14 +5,15 @@ import java.sql.*;
 /**
  * mysql 同步查询
  * sysout最好用日志处理
+ *
  * @param <T>
  */
 public class MysqlSyncClient<T> {
     private static transient Connection connection;
     private static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    private static final String URL = "jdbc:mysql://xxxx";
-    private static final String USER = "xxxx";
-    private static final String PASSWORD = "xxxx";
+    private static final String URL = "jdbc:mysql://localhost:3306/flink";
+    private static final String USER = "root";
+    private static final String PASSWORD = "123456";
 
     static {
         init();
@@ -42,18 +43,19 @@ public class MysqlSyncClient<T> {
         }
     }
 
-    public T query(T t)  {
-        StoreInfo info = (StoreInfo) t;
-        try{
-        Statement statement = connection.createStatement();
-        ResultSet resultSet =
-                statement.executeQuery("select str_cd,crf_str_cd,crf_str_nm from t_shp_crf_str_cfg_ed_a where str_cd " +
-                        "='" + info.getStrCd()+"';");
-        if (resultSet != null && resultSet.next()) {
-            info.setStrNm(resultSet.getString(3));
-        }}
-        catch (SQLException e ){
-            System.out.println("query failed!"+e.getMessage());
+    public T query(T t) {
+        CategoryInfo info = (CategoryInfo) t;
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet =
+                    statement.executeQuery("select sub_category_id,parent_category_id from category where " +
+                            "sub_category_id " +
+                            "='" + info.getSubCategoryId() + "';");
+            if (resultSet != null && resultSet.next()) {
+                info.setParentCategoryId(resultSet.getLong(2));
+            }
+        } catch (SQLException e) {
+            System.out.println("query failed!" + e.getMessage());
         }
         return t;
     }

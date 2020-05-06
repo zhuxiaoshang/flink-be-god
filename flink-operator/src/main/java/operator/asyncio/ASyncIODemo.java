@@ -19,12 +19,12 @@ import java.util.concurrent.TimeUnit;
 public class ASyncIODemo {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        DataStreamSource<StoreInfo> src = env.addSource(new RichSourceFunction<StoreInfo>() {
+        DataStreamSource<CategoryInfo> src = env.addSource(new RichSourceFunction<CategoryInfo>() {
             @Override
-            public void run(SourceContext<StoreInfo> ctx) throws Exception {
-                String[] cds = {"076", "180873434", "183286343", "18328643", "18435643", "74MV"};
-                for (String cd : cds) {
-                    ctx.collect(new StoreInfo(cd, ""));
+            public void run(SourceContext<CategoryInfo> ctx) throws Exception {
+                Long[] subId = {8109L, 4907L, 2171L, 2410L, 7769L, 3579L};
+                for (Long id : subId) {
+                    ctx.collect(new CategoryInfo(id, null));
                 }
             }
 
@@ -33,7 +33,9 @@ public class ASyncIODemo {
 
             }
         });
-        //AsyncDataStream.unorderedWait(src,new ASyncIOFunction(),1000, TimeUnit.SECONDS,10).print();
+        //方式一：同步调用+线程池
+        AsyncDataStream.unorderedWait(src,new ASyncIOFunction(),1000, TimeUnit.SECONDS,10).print();
+        //方式二：异步client
         AsyncDataStream.unorderedWait(src,new ASyncIOClientFunction(),1000, TimeUnit.SECONDS,10).print();
         env.execute();
 

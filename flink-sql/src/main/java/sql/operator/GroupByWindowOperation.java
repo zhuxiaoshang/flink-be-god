@@ -15,7 +15,7 @@ public class GroupByWindowOperation {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         EnvironmentSettings settings = EnvironmentSettings.newInstance().useBlinkPlanner().build();
         StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env, settings);
-        KafkaSource.getSourceTable(tableEnv);
+        KafkaSource.getKafkaSource(tableEnv);
         Table table1 = tableEnv.sqlQuery("SELECT item_id,TUMBLE_START(proctime, INTERVAL '10' SECOND), COUNT(*)\n" +
                 "FROM user_behavior\n" +
                 "WHERE behavior = 'buy'\n" +
