@@ -22,7 +22,7 @@ public class SelectOperation {
 
         /**
          * 用POJO时报错
-         * 当前1.10.0版本的bug，1.10.1已经修复
+         * 当前1.10.0版本的bug，1.10.1已经修复--已确认修复
          * Exception in thread "main" org.apache.flink.table.api.ValidationException: Field types of query result and
          * registered TableSink  do not match.
          * Query schema: [user_id: BIGINT, item_id: BIGINT, category_id: BIGINT, behavior: STRING, ts: TIMESTAMP(3)

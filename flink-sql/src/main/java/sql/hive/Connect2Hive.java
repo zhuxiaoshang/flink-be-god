@@ -13,17 +13,17 @@ public class Connect2Hive {
         String name = "myhive";
         String defaultDatabase = "mydatabase";
         // a local path
-        String hiveConfDir = "C:\\Users\\17020047\\Desktop\\工具\\hive-site.xml";
-        String version = "1.2.2";
+        String hiveConfDir = "/Users/zhushang/Desktop/software";
+        String version = "2.7.4";
 
-        HiveCatalog hive = new HiveCatalog(name, defaultDatabase, hiveConfDir, version);
-        tableEnv.registerCatalog("myhive", hive);
-        // set the HiveCatalog as the current catalog of the session
-        tableEnv.useCatalog("myhive");
+//        HiveCatalog hive = new HiveCatalog(name, defaultDatabase, hiveConfDir, version);
+//        tableEnv.registerCatalog("myhive", hive);
+//        // set the HiveCatalog as the current catalog of the session
+//        tableEnv.useCatalog("myhive");
         for(String catalog:tableEnv.listDatabases()){
             System.out.println(catalog);
         }
-        tableEnv.useDatabase("bi_dm");
+        tableEnv.useDatabase("default");
         Table table = tableEnv.sqlQuery("select * from dm_area_str_td");
         table.toString();
         tableEnv.execute("");
