@@ -15,7 +15,7 @@
         <module>flink-sql</module>
     </modules>
     <properties>
-        <flink-version>1.10.0</flink-version>
+        <flink-version>1.10.1</flink-version>
     </properties>
     <dependencies>
         <dependency>
