@@ -1,4 +1,4 @@
-package window.assign;
+package window.assigner;
 
 import org.apache.flink.api.java.tuple.Tuple;
 import org.apache.flink.api.java.tuple.Tuple3;
