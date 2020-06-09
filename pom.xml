@@ -13,6 +13,7 @@
         <module>flink-operator</module>
         <module>flink-connector</module>
         <module>flink-sql</module>
+        <module>flink-application</module>
     </modules>
     <properties>
         <flink-version>1.10.1</flink-version>
