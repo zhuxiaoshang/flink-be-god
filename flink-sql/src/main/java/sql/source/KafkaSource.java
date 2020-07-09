@@ -1,9 +1,9 @@
 package sql.source;
 
-import org.apache.flink.table.api.java.StreamTableEnvironment;
+import org.apache.flink.table.api.TableEnvironment;
 
 public class KafkaSource {
-    public static void getKafkaSource(StreamTableEnvironment tableEnvironment){
+    public static void getKafkaSource(TableEnvironment tableEnvironment){
         tableEnvironment.sqlUpdate("CREATE TABLE user_behavior (\n" +
                 "    user_id BIGINT,\n" +
                 "    item_id BIGINT,\n" +

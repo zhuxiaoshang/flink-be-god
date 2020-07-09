@@ -16,7 +16,7 @@
         <module>flink-application</module>
     </modules>
     <properties>
-        <flink-version>1.10.1</flink-version>
+        <flink-version>1.11.0</flink-version>
     </properties>
     <dependencies>
         <dependency>
@@ -117,6 +117,11 @@
             <artifactId>flink-table-common</artifactId>
             <version>${flink-version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-clients_2.11</artifactId>
+            <version>${flink-version}</version>
         </dependency>
         <dependency>
             <groupId>log4j</groupId>

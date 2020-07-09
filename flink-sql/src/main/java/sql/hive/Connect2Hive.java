@@ -16,8 +16,8 @@ public class Connect2Hive {
         String hiveConfDir = "/Users/zhushang/Desktop/software/apache-hive-2.2.0-bin/conf";
         String version = "2.2.0 ";
 
-        HiveCatalog hive = new HiveCatalog(name, defaultDatabase, hiveConfDir, version);
-        tableEnv.registerCatalog("myhive", hive);
+//        HiveCatalog hive = new HiveCatalog(name, defaultDatabase, hiveConfDir, version);
+//        tableEnv.registerCatalog("myhive", hive);
         // set the HiveCatalog as the current catalog of the session
         tableEnv.useCatalog("myhive");
         for(String catalog:tableEnv.listDatabases()){
