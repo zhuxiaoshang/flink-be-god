@@ -1,10 +1,10 @@
 package sql.sink;
 
-import org.apache.flink.table.api.java.StreamTableEnvironment;
+import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 public class ESSink {
     public static void getEsSink1(StreamTableEnvironment tableEnvironment) {
-        tableEnvironment.sqlUpdate("CREATE TABLE buy_cnt_per_hour ( \n" +
+        tableEnvironment.executeSql("CREATE TABLE buy_cnt_per_hour ( \n" +
                 "    hour_of_day BIGINT,\n" +
                 "    buy_cnt BIGINT\n" +
                 ") WITH (\n" +
@@ -19,7 +19,7 @@ public class ESSink {
                 ")");
     }
     public static void getEsSink2(StreamTableEnvironment tableEnvironment) {
-        tableEnvironment.sqlUpdate("CREATE TABLE cumulative_uv (\n" +
+        tableEnvironment.executeSql("CREATE TABLE cumulative_uv (\n" +
                 "    time_str STRING,\n" +
                 "    uv BIGINT\n" +
                 ") WITH (\n" +
@@ -33,7 +33,7 @@ public class ESSink {
                 ")");
     }
     public static void getEsSink3(StreamTableEnvironment tableEnvironment) {
-        tableEnvironment.sqlUpdate("CREATE TABLE top_category (\n" +
+        tableEnvironment.executeSql("CREATE TABLE top_category (\n" +
                 "    category_name STRING,  -- 类目名称\n" +
                 "    buy_cnt BIGINT  -- 销量\n" +
                 ") WITH (\n" +

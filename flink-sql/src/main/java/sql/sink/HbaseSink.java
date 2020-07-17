@@ -1,10 +1,11 @@
 package sql.sink;
 
-import org.apache.flink.table.api.java.StreamTableEnvironment;
+
+import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 public class HbaseSink {
     public static void getHbaseSink(StreamTableEnvironment tableEnvironment) {
-        tableEnvironment.sqlUpdate("CREATE TABLE hbaseSinkTable (\n" +
+        tableEnvironment.executeSql("CREATE TABLE hbaseSinkTable (\n" +
                 "    row_key string,\n" +
                 "    cf ROW(user_id BIGINT,item_id BIGINT,category_id BIGINT,behavior STRING)\n" +
                 ") WITH (\n" +

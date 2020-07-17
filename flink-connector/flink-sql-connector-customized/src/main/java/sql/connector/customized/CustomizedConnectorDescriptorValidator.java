@@ -8,9 +8,9 @@ import org.apache.flink.table.descriptors.DescriptorProperties;
  * with参数
  */
 public class CustomizedConnectorDescriptorValidator extends ConnectorDescriptorValidator {
-    public static final String CONNECTOR_JOB = "connector.job";
-    public static final String CONNECTOR_METRICS = "connector.metrics";
-    public static final String CONNECTOR_ADDRESS = "connector.address";
+    public static final String CONNECTOR_JOB = "job";
+    public static final String CONNECTOR_METRICS = "metrics";
+    public static final String CONNECTOR_ADDRESS = "address";
     public static final String CONNECTOR_TYPE_VALUE_CUSTOMIZE = "customize";
 
     @Override

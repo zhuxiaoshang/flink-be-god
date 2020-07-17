@@ -3,7 +3,7 @@ package sql.operator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.java.StreamTableEnvironment;
+import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import sql.sink.ESSink;
 import sql.source.KafkaSource;
 
@@ -18,7 +18,7 @@ public class SinkToEs {
                 "FROM user_behavior\n" +
                 "WHERE behavior = 'buy'\n" +
                 "GROUP BY TUMBLE(ts, INTERVAL '1' HOUR)");
-        table1.insertInto("buy_cnt_per_hour");
+        table1.executeInsert("buy_cnt_per_hour");
         env.execute();
     }
 }

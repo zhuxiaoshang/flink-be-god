@@ -4,7 +4,7 @@ import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.types.Row;
 
-public class CustomizedSinkFunction extends RichSinkFunction<Row> {
+public class CustomizedSinkFunction implements SinkFunction<Row> {
     private final String job;
     private final String metrics;
     private final String address;
@@ -15,6 +15,7 @@ public class CustomizedSinkFunction extends RichSinkFunction<Row> {
         this.address = address;
         this.fieldNames = fieldNames;
     }
+
 
     /**
      * Writes the given value to the sink. This function is called for every record.

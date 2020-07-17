@@ -3,14 +3,14 @@ package sql.operator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.java.StreamTableEnvironment;
+import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import sql.sink.HbaseSink;
 import sql.source.KafkaSource;
 
 /**
  * 从kafka读数据写入hbase中
  * 这里涉及到搭建hadoop、hbase、zk环境的过程，hbase不使用内置的zk，因为kafka也需要用zk,所以让他们公用一个zk，涉及到很多配置比较麻烦
- * 比较重要的几个配置入下：
+ * 比较重要的几个配置如下：
  * 1.hadoop的etc/hadoop/core-site.xml
  *   <property>
  *     <name>fs.defaultFS</name>
@@ -43,7 +43,7 @@ public class SinkToHbase {
                 "\n" +
                 "FROM user_behavior\n" +
                 "WHERE behavior = 'buy'");
-        table1.insertInto("hbaseSinkTable");
+        table1.executeInsert("hbaseSinkTable");
         env.execute();
     }
     /**
