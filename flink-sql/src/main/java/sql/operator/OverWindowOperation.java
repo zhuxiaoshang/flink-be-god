@@ -3,7 +3,7 @@ package sql.operator;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.Table;
-import org.apache.flink.table.api.java.StreamTableEnvironment;
+import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import sql.sink.ESSink;
 import sql.source.KafkaSource;
 
@@ -28,10 +28,11 @@ public class OverWindowOperation {
                 "WINDOW w AS (ORDER BY proctime ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW)");
         tableEnv.createTemporaryView("uv_per_10min",table1);
         //2.统计每10分钟的最大uv数
-        tableEnv.sqlUpdate("INSERT INTO cumulative_uv\n" +
+        tableEnv.executeSql("INSERT INTO cumulative_uv\n" +
                 "SELECT time_str, MAX(uv)\n" +
                 "FROM uv_per_10min\n" +
                 "GROUP BY time_str");
-        env.execute();
+        //env.execute();亦可
+        tableEnv.execute("name");
     }
 }

@@ -1,6 +1,7 @@
 package sql.dimension;
 
-import org.apache.flink.table.api.java.StreamTableEnvironment;
+
+import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
 public class MySqlDimension {
     public static void getMysqlDim(StreamTableEnvironment tableEnvironment) {
