@@ -16,7 +16,7 @@
         <module>flink-application</module>
     </modules>
     <properties>
-        <flink-version>1.11.0</flink-version>
+        <flink-version>1.11.1</flink-version>
     </properties>
     <dependencies>
         <dependency>

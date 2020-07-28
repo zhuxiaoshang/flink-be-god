@@ -1,16 +1,12 @@
 package sql.connector.customized;
 
-import org.apache.flink.streaming.api.datastream.DataStream;
-import org.apache.flink.streaming.api.datastream.DataStreamSink;
 import org.apache.flink.streaming.api.functions.sink.SinkFunction;
 import org.apache.flink.table.api.TableSchema;
 import org.apache.flink.table.connector.ChangelogMode;
 import org.apache.flink.table.connector.sink.DynamicTableSink;
 import org.apache.flink.table.connector.sink.SinkFunctionProvider;
 import org.apache.flink.table.data.RowData;
-import org.apache.flink.table.utils.TableConnectorUtils;
 import org.apache.flink.table.utils.TableSchemaUtils;
-import org.apache.flink.types.Row;
 import org.apache.flink.util.Preconditions;
 
 
