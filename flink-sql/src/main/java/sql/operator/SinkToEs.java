@@ -19,6 +19,6 @@ public class SinkToEs {
                 "WHERE behavior = 'buy'\n" +
                 "GROUP BY TUMBLE(ts, INTERVAL '1' HOUR)");
         table1.executeInsert("buy_cnt_per_hour");
-        env.execute();
+//        env.execute();
     }
 }

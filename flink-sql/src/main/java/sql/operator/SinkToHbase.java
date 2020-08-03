@@ -44,7 +44,7 @@ public class SinkToHbase {
                 "FROM user_behavior\n" +
                 "WHERE behavior = 'buy'");
         table1.executeInsert("hbaseSinkTable");
-        env.execute();
+//        env.execute();
     }
     /**
      * 结果
