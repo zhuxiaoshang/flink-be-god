@@ -2,11 +2,9 @@ package sql.operator;
 
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.EnvironmentSettings;
-import org.apache.flink.table.api.StatementSet;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 import sql.sink.BlackholeSink;
 import sql.source.DatagenSource;
-import sql.source.KafkaSource;
 
 public class SinkToBlackhole {
     public static void main(String[] args) throws Exception {
