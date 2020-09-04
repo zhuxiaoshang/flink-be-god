@@ -10,7 +10,7 @@ public class MySqlDimension {
                 "    parent_category_id BIGINT -- 顶级类目\n" +
                 ") WITH (\n" +
                 "    'connector.type' = 'jdbc',\n" +
-                "    'connector.url' = 'jdbc:mysql://localhost:3306/flink',\n" +
+                "    'connector.url' = 'jdbc:mysql://localhost:3307/flink',\n" +
                 "    'connector.table' = 'category',\n" +
                 "    'connector.driver' = 'com.mysql.jdbc.Driver',\n" +
                 "    'connector.username' = 'root',\n" +
