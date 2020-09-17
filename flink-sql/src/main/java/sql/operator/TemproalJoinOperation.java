@@ -42,6 +42,6 @@ public class TemproalJoinOperation {
                         "WHERE behavior = 'buy'\n" +
                         "GROUP BY category_name");
         query.executeInsert("top_category");
-        env.execute();
+//        env.execute();
     }
 }

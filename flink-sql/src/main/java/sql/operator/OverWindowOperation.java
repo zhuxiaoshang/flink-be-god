@@ -32,7 +32,7 @@ public class OverWindowOperation {
                 "SELECT time_str, MAX(uv)\n" +
                 "FROM uv_per_10min\n" +
                 "GROUP BY time_str");
-        //env.execute();亦可
-        tableEnv.execute("name");
+        //env.execute();不需要再调用
+        //tableEnv.execute("name");
     }
 }
