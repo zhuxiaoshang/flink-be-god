@@ -3,10 +3,7 @@ package sql.connector.customized.dynamic;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.table.connector.ChangelogMode;
 import org.apache.flink.table.connector.source.*;
-import org.apache.flink.table.data.RowData;
-import org.apache.flink.types.RowKind;
 
-import java.awt.image.LookupTable;
 
 /**
  * source 实现ScanTableSource 一般表示当做普通数据源
