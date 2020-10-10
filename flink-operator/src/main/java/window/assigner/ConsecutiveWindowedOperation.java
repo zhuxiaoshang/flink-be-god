@@ -24,7 +24,7 @@ public class ConsecutiveWindowedOperation {
                     }
                 });
         //每3秒统计TOP1
-        src.keyBy(0).timeWindow(Time.seconds(3)).sum(1).timeWindowAll(Time.seconds(3)).max(1).print();
+        src.keyBy(t->t.f0).timeWindow(Time.seconds(3)).sum(1).timeWindowAll(Time.seconds(3)).max(1).print();
         env.execute();
 
     }

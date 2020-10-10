@@ -17,7 +17,7 @@ public class WindowAggregation {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         DataStream<Tuple3<String, Integer, Long>> src = SourceGenerator.fromElements(env);
-        src.keyBy(0).window(TumblingEventTimeWindows.of(Time.seconds(3))).aggregate(new AggregateWindowFunction()).print();
+        src.keyBy(t->t.f0).window(TumblingEventTimeWindows.of(Time.seconds(3))).aggregate(new AggregateWindowFunction()).print();
         env.execute();
     }
 }

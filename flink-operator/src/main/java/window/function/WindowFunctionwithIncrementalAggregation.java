@@ -27,20 +27,20 @@ public class WindowFunctionwithIncrementalAggregation {
         /**
          * 定义1分钟的窗口，实时聚合操作，每5秒钟触发一次窗口计算，比如输出聚合值
          */
-        src.keyBy(0).timeWindow(Time.minutes(1)).trigger(ContinuousEventTimeTrigger.of(Time.seconds(5)))
-                .aggregate(new AggregateWindowFunction(), new ProcessWindowFunction<Integer, Object, Tuple, TimeWindow>() {
-            @Override
-            public void process(Tuple tuple, Context context, Iterable<Integer> elements, Collector<Object> out) throws Exception {
-                //do something
-                //可以获取状态
-                //https://ci.apache.org/projects/flink/flink-docs-release-1.10/dev/stream/operators/windows.html#using-per-window-state-in-processwindowfunction
-                //context.windowState();
-                //context.globalState();
-                System.out.println("窗口开始时间="+context.window().getStart()+",结束时间="+context.window().getEnd());
-                System.out.println("key = "+tuple);
-                System.out.println("窗口内数据="+elements);
-            }
-        }).print();
+        src.keyBy(t -> t.f0).timeWindow(Time.minutes(1)).trigger(ContinuousEventTimeTrigger.of(Time.seconds(5)))
+                .aggregate(new AggregateWindowFunction(), new ProcessWindowFunction<Integer, Object, String, TimeWindow>() {
+                    @Override
+                    public void process(String key, Context context, Iterable<Integer> elements, Collector<Object> out) throws Exception {
+                        //do something
+                        //可以获取状态
+                        //https://ci.apache.org/projects/flink/flink-docs-release-1.10/dev/stream/operators/windows.html#using-per-window-state-in-processwindowfunction
+                        //context.windowState();
+                        //context.globalState();
+                        System.out.println("窗口开始时间=" + context.window().getStart() + ",结束时间=" + context.window().getEnd());
+                        System.out.println("key = " + key);
+                        System.out.println("窗口内数据=" + elements);
+                    }
+                }).print();
         env.execute();
     }
 }

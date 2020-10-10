@@ -21,7 +21,7 @@ public class CustomTriggerOperation {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         DataStream<Tuple3<String, Integer, Long>> src = SourceGenerator.fromElements(env);
-        src.keyBy(0).timeWindow(Time.seconds(5)).trigger(new CustomTrigger()).apply(new ApplyWindowFunction()).print();
+        src.keyBy(t->t.f0).timeWindow(Time.seconds(5)).trigger(new CustomTrigger()).apply(new ApplyWindowFunction()).print();
         env.execute();
     }
 

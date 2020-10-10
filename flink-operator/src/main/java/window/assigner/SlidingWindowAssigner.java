@@ -18,7 +18,7 @@ public class SlidingWindowAssigner {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         DataStream<Tuple3<String, Integer, Long>> src = SourceGenerator.fromElements(env);
-        src.keyBy(0).window(SlidingEventTimeWindows.of(Time.seconds(5), Time.seconds(1))).process(new ProcessingWindowFunction()).print();
+        src.keyBy(t->t.f0).window(SlidingEventTimeWindows.of(Time.seconds(5), Time.seconds(1))).process(new ProcessingWindowFunction()).print();
         env.execute();
     }
 }

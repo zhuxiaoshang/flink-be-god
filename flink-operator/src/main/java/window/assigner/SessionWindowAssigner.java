@@ -25,7 +25,7 @@ public class SessionWindowAssigner {
         //        .process(new ProcessingWindowFunction())
         //        .print();
         //动态调整gap大小
-        src.keyBy(0).window(EventTimeSessionWindows.withDynamicGap(new SessionWindowTimeGapExtractor<Tuple3<String, Integer, Long>>() {
+        src.keyBy(t->t.f0).window(EventTimeSessionWindows.withDynamicGap(new SessionWindowTimeGapExtractor<Tuple3<String, Integer, Long>>() {
             @Override
             public long extract(Tuple3<String, Integer, Long> element) {
                 return element.f1*1000;

@@ -1,5 +1,6 @@
 package window.allowedlateness;
 
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -8,6 +9,8 @@ import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrderness
 import org.apache.flink.streaming.api.windowing.time.Time;
 import window.datasource.SourceGenerator;
 import window.function.ApplyAllWindowFunction;
+
+import java.time.Duration;
 
 /**
  * 允许延迟时间,在水印延迟的基础上再容忍一定延迟数据的处理
@@ -20,12 +23,15 @@ public class AllowedLatenessOperation {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         DataStream<Tuple3<String, Integer, Long>> src =
-                env.addSource(new SourceGenerator()).setParallelism(1).assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor<Tuple3<String, Integer, Long>>(Time.seconds(2)) {
+                env.addSource(new SourceGenerator()).setParallelism(1)
+                        .assignTimestampsAndWatermarks(WatermarkStrategy.<Tuple3<String, Integer, Long>>forBoundedOutOfOrderness(Duration.ofSeconds(2)).withTimestampAssigner((e,t)->e.f2))
+                      /*  .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor(Time.seconds(2)) {
                     @Override
                     public long extractTimestamp(Tuple3<String, Integer, Long> element) {
                         return element.f2;
                     }
-                });
+                })*/
+                ;
         src.timeWindowAll(Time.seconds(5)).allowedLateness(Time.seconds(2)).apply(new ApplyAllWindowFunction()).print();
         env.execute();
         /**

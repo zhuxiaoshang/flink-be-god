@@ -19,7 +19,7 @@ public class TumblingWindowAssigner {
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         DataStream<Tuple3<String, Integer, Long>> src = SourceGenerator.fromElements(env);
         //window的offset默认可以不写，天窗口可以指定offset=-8 hours，从0点开始
-        src.keyBy(0).window(TumblingEventTimeWindows.of(Time.seconds(3),Time.seconds(0))).apply(new ApplyWindowFunction()).print();
+        src.keyBy(t -> t.f0).window(TumblingEventTimeWindows.of(Time.seconds(3), Time.seconds(0))).apply(new ApplyWindowFunction()).print();
         env.execute();
     }
 }

@@ -14,7 +14,7 @@
         <module>flink-connector</module>
         <module>flink-sql</module>
         <module>flink-application</module>
-        <module>flink-connector/flink-jdbc-dialect-customized</module>
+        <module>flink-connector</module>
         <module>flink-formats</module>
     </modules>
     <properties>

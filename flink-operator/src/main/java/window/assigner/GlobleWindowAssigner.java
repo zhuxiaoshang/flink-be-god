@@ -21,10 +21,10 @@ public class GlobleWindowAssigner {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         DataStream<Tuple3<String, Integer, Long>> src = SourceGenerator.fromElements(env);
-        src.keyBy(0).window(GlobalWindows.create()).trigger(CountTrigger.of(2)).process(new ProcessWindowFunction<Tuple3<String, Integer, Long>, Object, Tuple, GlobalWindow>() {
+        src.keyBy(t->t.f0).window(GlobalWindows.create()).trigger(CountTrigger.of(2)).process(new ProcessWindowFunction<Tuple3<String, Integer, Long>, Object, String, GlobalWindow>() {
             @Override
-            public void process(Tuple tuple, Context context, Iterable<Tuple3<String, Integer, Long>> elements, Collector<Object> out) throws Exception {
-                System.out.println("key = " + tuple);
+            public void process(String key, Context context, Iterable<Tuple3<String, Integer, Long>> elements, Collector<Object> out) throws Exception {
+                System.out.println("key = " + key);
                 System.out.println("窗口内数据=" + elements);
             }
         }).print();

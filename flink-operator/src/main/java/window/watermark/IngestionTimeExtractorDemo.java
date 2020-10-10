@@ -12,13 +12,14 @@ import window.function.ApplyWindowFunction;
 /**
  * 基于摄取时间语义的水印生成器,默认获取机器时钟作为水印时间戳。
  */
+@Deprecated
 public class IngestionTimeExtractorDemo {
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);//这里时间语义不起作用
         DataStream<Tuple3<String, Integer, Long>> src =
                 env.addSource(new SourceGenerator()).setParallelism(1).assignTimestampsAndWatermarks(new IngestionTimeExtractor<>());
-        src.keyBy(0).timeWindow(Time.seconds(5)).apply(new ApplyWindowFunction()).print();
+        src.keyBy(t -> t.f0).timeWindow(Time.seconds(5)).apply(new ApplyWindowFunction()).print();
         env.execute();
     }
 }
