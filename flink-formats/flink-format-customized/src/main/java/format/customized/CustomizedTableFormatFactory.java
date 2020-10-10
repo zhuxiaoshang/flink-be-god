@@ -1,6 +1,5 @@
 package format.customized;
 
-import javafx.beans.property.ReadOnlyBooleanWrapper;
 import org.apache.flink.api.common.serialization.DeserializationSchema;
 import org.apache.flink.api.common.serialization.SerializationSchema;
 import org.apache.flink.table.factories.DeserializationSchemaFactory;
