@@ -1,6 +1,7 @@
 package window.watermark;
 
 import com.sun.org.apache.bcel.internal.generic.F2D;
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -12,6 +13,7 @@ import window.datasource.SourceGenerator;
 import window.function.ApplyWindowFunction;
 
 import javax.annotation.Nullable;
+import java.time.Duration;
 
 /**
  * 自定义周期水印生成
@@ -21,7 +23,12 @@ public class CustomPeriodicWatermarkAssignerDemo {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         DataStream<Tuple3<String, Integer, Long>> src =
-                env.addSource(new SourceGenerator()).setParallelism(1).assignTimestampsAndWatermarks(new AssignerWithPeriodicWatermarks<Tuple3<String, Integer, Long>>() {
+                env.addSource(new SourceGenerator()).setParallelism(1)
+                        .assignTimestampsAndWatermarks(
+                                WatermarkStrategy
+                                        .<Tuple3<String, Integer, Long>>forBoundedOutOfOrderness(Duration.ofSeconds(3))
+                                        .withTimestampAssigner((e,t)->e.f2))
+                        /*.assignTimestampsAndWatermarks(new AssignerWithPeriodicWatermarks<Tuple3<String, Integer, Long>>() {
                     long currentTimestamp;
                     final long DELAY = 3L * 1000; //3s延迟
                     @Nullable
@@ -35,8 +42,9 @@ public class CustomPeriodicWatermarkAssignerDemo {
                         currentTimestamp = Math.max(currentTimestamp, element.f2);
                         return element.f2;
                     }
-                });
-        src.keyBy(0).timeWindow(Time.seconds(5)).apply(new ApplyWindowFunction()).print();
+                })*/
+                ;
+        src.keyBy(t->t.f0).timeWindow(Time.seconds(5)).apply(new ApplyWindowFunction()).print();
         env.execute();
     }
 }

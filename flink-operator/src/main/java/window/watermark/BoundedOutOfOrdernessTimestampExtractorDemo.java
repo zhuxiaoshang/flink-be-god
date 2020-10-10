@@ -13,4 +13,9 @@ public class BoundedOutOfOrdernessTimestampExtractorDemo {
      *                     }
      *                 })
      */
+
+    /**
+     * assignTimestampsAndWatermarks(WatermarkStrategy.<Tuple3<String, Integer, Long>>forBoundedOutOfOrderness(Duration.ofSeconds(20)).withTimestampAssigner((e,t)->e.f2));
+     */
+
 }

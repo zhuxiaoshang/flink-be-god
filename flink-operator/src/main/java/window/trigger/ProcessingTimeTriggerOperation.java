@@ -19,7 +19,7 @@ public class ProcessingTimeTriggerOperation {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setStreamTimeCharacteristic(TimeCharacteristic.ProcessingTime);
         DataStream<Tuple3<String, Integer, Long>> src = env.addSource(new SourceGenerator()).setParallelism(1);
-        src.keyBy(0).window(TumblingProcessingTimeWindows.of(Time.seconds(3))).apply(new ApplyWindowFunction()).print();
+        src.keyBy(t->t.f0).window(TumblingProcessingTimeWindows.of(Time.seconds(3))).apply(new ApplyWindowFunction()).print();
         env.execute();
     }
 }

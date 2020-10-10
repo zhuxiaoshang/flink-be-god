@@ -1,11 +1,16 @@
 package window.watermark;
 
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.api.java.tuple.Tuple3;
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.timestamps.AscendingTimestampExtractor;
+import org.apache.flink.streaming.api.functions.windowing.WindowFunction;
 import org.apache.flink.streaming.api.windowing.time.Time;
+import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
+import org.apache.flink.util.Collector;
 import window.datasource.SourceGenerator;
 import window.function.ApplyWindowFunction;
 
@@ -18,14 +23,20 @@ public class AscendingTimestampExtractorDemo {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime);
         DataStream<Tuple3<String, Integer, Long>> src =
-                env.addSource(new SourceGenerator()).setParallelism(1).assignTimestampsAndWatermarks(new AscendingTimestampExtractor<Tuple3<String, Integer, Long>>() {
+                env.addSource(new SourceGenerator()).setParallelism(1);
+        /**
+         * AscendingTimestampExtractor已废弃使用新版本的WatermarkStrategy
+        src.assignTimestampsAndWatermarks(new AscendingTimestampExtractor<Tuple3<String, Integer, Long>>() {
                     @Override
                     public long extractAscendingTimestamp(Tuple3<String, Integer, Long> element) {
                         return element.f2;
                     }
                     //抛异常处理，默认打日志
                 }.withViolationHandler(new AscendingTimestampExtractor.FailingHandler()));
-        src.keyBy(0).timeWindow(Time.seconds(5)).apply(new ApplyWindowFunction()).print();
+         */
+        src.assignTimestampsAndWatermarks(WatermarkStrategy.<Tuple3<String, Integer, Long>>forMonotonousTimestamps().withTimestampAssigner((e,t)->e.f2));
+        src.keyBy(t->t.f0).timeWindow(Time.seconds(5))
+                .apply(new ApplyWindowFunction()).print();
         env.execute();
     }
 }

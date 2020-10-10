@@ -1,5 +1,6 @@
 package window.trigger;
 
+import org.apache.flink.api.common.eventtime.WatermarkStrategy;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.api.java.tuple.Tuple2;
 import org.apache.flink.streaming.api.TimeCharacteristic;
@@ -10,6 +11,8 @@ import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrderness
 import org.apache.flink.streaming.api.windowing.time.Time;
 import org.apache.flink.streaming.api.windowing.triggers.ContinuousEventTimeTrigger;
 import org.apache.flink.util.Collector;
+
+import java.time.Duration;
 
 /**
  * 在整理【实时数仓篇】Flink 窗口的应用与实现 时，对其中Trigger示例有疑问做的验证
@@ -42,12 +45,15 @@ public class ContinuousEventTimeTriggerOperation {
                 String[] strings = s.split(",");
                 collector.collect(Tuple2.of(Long.parseLong(strings[0]),Integer.parseInt(strings[1])));
             }
-        }).assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor<Tuple2<Long, Integer>>(Time.seconds(0)) {
+        })
+                .assignTimestampsAndWatermarks(WatermarkStrategy.<Tuple2<Long, Integer>>forBoundedOutOfOrderness(Duration.ofSeconds(0)).withTimestampAssigner((e,t)->e.f0))
+               /* .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor<Tuple2<Long, Integer>>(Time.seconds(0)) {
             @Override
             public long extractTimestamp(Tuple2<Long, Integer> element) {
                 return element.f0;
             }
-        }).timeWindowAll(Time.minutes(5)).trigger(ContinuousEventTimeTrigger.of(Time.minutes(2))).sum(1)
+        })*/
+                .timeWindowAll(Time.minutes(5)).trigger(ContinuousEventTimeTrigger.of(Time.minutes(2))).sum(1)
                 .print();
         env.execute();
     }
