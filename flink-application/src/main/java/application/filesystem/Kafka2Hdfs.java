@@ -9,6 +9,7 @@ import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.sink.filesystem.StreamingFileSink;
 import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.DefaultRollingPolicy;
+import org.apache.flink.streaming.api.functions.sink.filesystem.rollingpolicies.OnCheckpointRollingPolicy;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 
 import java.util.Properties;
@@ -37,11 +38,17 @@ public class Kafka2Hdfs {
                 .addSource(new FlinkKafkaConsumer<>("topic", new SimpleStringSchema(), properties));
 
 
+//        src.addSink(StreamingFileSink
+//                .forRowFormat(
+//                        new Path("hdfs://xxx/zs_test"),
+//                        new SimpleStringEncoder<String>("UTF-8"))
+//                .withRollingPolicy(DefaultRollingPolicy.builder().build()).build());
+
         src.addSink(StreamingFileSink
                 .forRowFormat(
                         new Path("hdfs://xxx/zs_test"),
                         new SimpleStringEncoder<String>("UTF-8"))
-                .withRollingPolicy(DefaultRollingPolicy.builder().build()).build());
+                .withRollingPolicy(OnCheckpointRollingPolicy.build()).build());
 
         env.execute("sink to hdfs");
     }
