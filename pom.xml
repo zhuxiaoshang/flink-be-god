@@ -16,6 +16,7 @@
         <module>flink-application</module>
         <module>flink-connector</module>
         <module>flink-formats</module>
+        <module>flink-sql-submit</module>
     </modules>
     <properties>
         <flink-version>1.11.2</flink-version>

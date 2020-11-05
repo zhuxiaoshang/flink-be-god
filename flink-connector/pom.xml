@@ -10,6 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <modules>
         <module>flink-sql-connector-customized</module>
+        <module>flink-jdbc-dialect-customized</module>
     </modules>
 
     <groupId>zhuxiaoshang</groupId>
