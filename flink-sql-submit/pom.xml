@@ -18,6 +18,12 @@
             <version>${flink-version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-hive_2.11</artifactId>
+            <version>${flink-version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
