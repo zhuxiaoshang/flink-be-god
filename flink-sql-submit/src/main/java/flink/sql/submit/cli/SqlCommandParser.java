@@ -92,7 +92,11 @@ public class SqlCommandParser {
                         return Optional.of(new String[0]);
                     }
                     return Optional.of(new String[]{operands[1], operands[2]});
-                });
+                }),
+
+        DROP("(DROP\\s+TABLE.*)",SINGLE_OPERAND),
+
+        USE("(USE\\s+.*)",SINGLE_OPERAND);
 
         public final Pattern pattern;
         public final Function<String[], Optional<String[]>> operandConverter;

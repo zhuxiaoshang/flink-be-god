@@ -7,10 +7,13 @@ import flink.sql.submit.cli.SqlCommandParser.SqlCommandCall;
 import org.apache.flink.table.api.EnvironmentSettings;
 import org.apache.flink.table.api.SqlParserException;
 import org.apache.flink.table.api.TableEnvironment;
+import org.apache.flink.table.catalog.hive.HiveCatalog;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+
+import static flink.sql.submit.cli.SqlCommandParser.SqlCommand.SET;
 
 /**
  * @author: zhushang
@@ -41,29 +44,30 @@ public class SqlSubmit {
                 .inStreamingMode()
                 .build();
         this.tEnv = TableEnvironment.create(settings);
+
+        String name            = "hive_catalog";
+        String defaultDatabase = "defaultdb";
+        String hiveConfDir     = "/opt/hive-conf"; // a local path
+
+        HiveCatalog hive = new HiveCatalog(name, defaultDatabase, hiveConfDir);
+        tEnv.registerCatalog("hive_catalog", hive);
+        tEnv.useCatalog("hive_catalog");
+
         List<String> sql = Files.readAllLines(Paths.get(workSpace + "/" + sqlFilePath));
         List<SqlCommandCall> calls = SqlCommandParser.parse(sql);
         for (SqlCommandCall call : calls) {
             callCommand(call);
         }
-        tEnv.execute("SQL Job");
+//        tEnv.execute("SQL Job");
     }
 
     // --------------------------------------------------------------------------------------------
 
     private void callCommand(SqlCommandCall cmdCall) {
-        switch (cmdCall.command) {
-            case SET:
-                callSet(cmdCall);
-                break;
-            case CREATE_TABLE:
-                callCreateTable(cmdCall);
-                break;
-            case INSERT_INTO:
-                callInsertInto(cmdCall);
-                break;
-            default:
-                throw new RuntimeException("Unsupported command: " + cmdCall.command);
+        if(cmdCall.command == SET){
+            callSet(cmdCall);
+        }else{
+            executeSql(cmdCall);
         }
     }
 
@@ -73,21 +77,12 @@ public class SqlSubmit {
         tEnv.getConfig().getConfiguration().setString(key, value);
     }
 
-    private void callCreateTable(SqlCommandCall cmdCall) {
+    private void executeSql(SqlCommandCall cmdCall) {
         String ddl = cmdCall.operands[0];
         try {
             tEnv.executeSql(ddl);
         } catch (SqlParserException e) {
             throw new RuntimeException("SQL parse failed:\n" + ddl + "\n", e);
-        }
-    }
-
-    private void callInsertInto(SqlCommandCall cmdCall) {
-        String dml = cmdCall.operands[0];
-        try {
-            tEnv.executeSql(dml);
-        } catch (SqlParserException e) {
-            throw new RuntimeException("SQL parse failed:\n" + dml + "\n", e);
         }
     }
 }
