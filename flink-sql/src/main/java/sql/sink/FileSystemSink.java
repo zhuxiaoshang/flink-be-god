@@ -17,6 +17,7 @@ public class FileSystemSink {
                 ")with(\n" +
                 "\t'connector' = 'filesystem', \n" +
                 "\t'path' = 'hdfs://localhost:9000/test',\n" +
+                " 'sink.rolling-policy.file-size' = '50 M',\n" +
                 "\t'format'='parquet',\n" +
                 "\t'parquet.compression'='SNAPPY'\n" +
                 ")");
