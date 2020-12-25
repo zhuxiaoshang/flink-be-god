@@ -13,6 +13,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>flink-format-customized</module>
+        <module>flink-parquet</module>
     </modules>
 
 
