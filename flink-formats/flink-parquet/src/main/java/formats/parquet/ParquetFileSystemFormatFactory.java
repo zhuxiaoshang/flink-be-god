@@ -51,161 +51,162 @@ import static org.apache.flink.table.filesystem.RowPartitionComputer.restorePart
  */
 public class ParquetFileSystemFormatFactory implements FileSystemFormatFactory {
 
-	public static final String IDENTIFIER = "parquet";
+    public static final String IDENTIFIER = "parquet";
 
 
-	public static final ConfigOption<Boolean> UTC_TIMEZONE = key("utc-timezone")
-		.booleanType()
-		.defaultValue(false)
-		.withDescription("Use UTC timezone or local timezone to the conversion between epoch" +
-			" time and LocalDateTime. Hive 0.x/1.x/2.x use local timezone. But Hive 3.x" +
-			" use UTC timezone");
+    public static final ConfigOption<Boolean> UTC_TIMEZONE = key("utc-timezone")
+            .booleanType()
+            .defaultValue(false)
+            .withDescription("Use UTC timezone or local timezone to the conversion between epoch" +
+                    " time and LocalDateTime. Hive 0.x/1.x/2.x use local timezone. But Hive 3.x" +
+                    " use UTC timezone");
 
-	@Override
-	public String factoryIdentifier() {
-		return IDENTIFIER;
-	}
+    @Override
+    public String factoryIdentifier() {
+        return IDENTIFIER;
+    }
 
-	@Override
-	public Set<ConfigOption<?>> requiredOptions() {
-		return new HashSet<>();
-	}
+    @Override
+    public Set<ConfigOption<?>> requiredOptions() {
+        return new HashSet<>();
+    }
 
-	@Override
-	public Set<ConfigOption<?>> optionalOptions() {
-		Set<ConfigOption<?>> options = new HashSet<>();
-		options.add(UTC_TIMEZONE);
-		// support "parquet.*"
-		return options;
-	}
+    @Override
+    public Set<ConfigOption<?>> optionalOptions() {
+        Set<ConfigOption<?>> options = new HashSet<>();
+        options.add(UTC_TIMEZONE);
+        // support "parquet.*"
+        return options;
+    }
 
-	private static Configuration getParquetConfiguration(ReadableConfig options) {
-		Configuration conf = new Configuration();
-		Properties properties = new Properties();
-		((org.apache.flink.configuration.Configuration) options).addAllToProperties(properties);
-		properties.forEach((k, v) -> conf.set(IDENTIFIER + "." + k, v.toString()));
-		return conf;
-	}
+    private static Configuration getParquetConfiguration(ReadableConfig options) {
+        Configuration conf = new Configuration();
+        Properties properties = new Properties();
+        ((org.apache.flink.configuration.Configuration) options).addAllToProperties(properties);
+        properties.forEach((k, v) -> conf.set(IDENTIFIER + "." + k, v.toString()));
+        return conf;
+    }
 
-	@Override
-	public InputFormat<RowData, ?> createReader(ReaderContext context) {
-		MessageType messageType = ParquetSchemaConverter.toParquetType(context.getFormatFieldTypes(), true, context.getFormatFieldNames());
-		Path[] paths = context.getPaths();
-		InputFormat parquetRowInputFormat = new ParquetRowDataInputFormat(paths.length > 0 ? paths[0] : null, messageType);
-		return parquetRowInputFormat;
-	}
+    @Override
+    public InputFormat<RowData, ?> createReader(ReaderContext context) {
+        //这里legacyMode给false，Array有level-3 和level-2两种结构，这里我们使用level-3
+        MessageType messageType = ParquetSchemaConverter.toParquetType(context.getFormatFieldTypes(), false, context.getFormatFieldNames());
+        Path[] paths = context.getPaths();
+        InputFormat parquetRowInputFormat = new ParquetRowDataInputFormat(paths.length > 0 ? paths[0] : null, messageType);
+        return parquetRowInputFormat;
+    }
 
 
-	@Override
-	public Optional<BulkWriter.Factory<RowData>> createBulkWriterFactory(WriterContext context) {
-		ReadableConfig config = context.getFormatOptions();
-		Properties properties = new Properties();
-		((org.apache.flink.configuration.Configuration) config).addAllToProperties(properties);
-		return Optional.of(ParquetRowDataBuilder.createWriterFactory(
-				RowType.of(Arrays.stream(context.getFormatFieldTypes())
-						.map(DataType::getLogicalType)
-						.toArray(LogicalType[]::new),
-					context.getFormatFieldNames()),
-				getParquetConfiguration(context.getFormatOptions()),
-				context.getFormatOptions().get(UTC_TIMEZONE)));
+    @Override
+    public Optional<BulkWriter.Factory<RowData>> createBulkWriterFactory(WriterContext context) {
+        ReadableConfig config = context.getFormatOptions();
+        Properties properties = new Properties();
+        ((org.apache.flink.configuration.Configuration) config).addAllToProperties(properties);
+        return Optional.of(ParquetRowDataBuilder.createWriterFactory(
+                RowType.of(Arrays.stream(context.getFormatFieldTypes())
+                                .map(DataType::getLogicalType)
+                                .toArray(LogicalType[]::new),
+                        context.getFormatFieldNames()),
+                getParquetConfiguration(context.getFormatOptions()),
+                context.getFormatOptions().get(UTC_TIMEZONE)));
 
-	}
+    }
 
-	@Override
-	public Optional<Encoder<RowData>> createEncoder(WriterContext context) {
-		return Optional.empty();
-	}
+    @Override
+    public Optional<Encoder<RowData>> createEncoder(WriterContext context) {
+        return Optional.empty();
+    }
 
-	/**
-	 * An implementation of {@link ParquetInputFormat} to read {@link RowData} records
-	 * from Parquet files.
-	 */
-	public static class ParquetInputFormat extends FileInputFormat<RowData> {
+    /**
+     * An implementation of {@link ParquetInputFormat} to read {@link RowData} records
+     * from Parquet files.
+     */
+    public static class ParquetInputFormat extends FileInputFormat<RowData> {
 
-		private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
 
-		private final String[] fullFieldNames;
-		private final DataType[] fullFieldTypes;
-		private final int[] selectedFields;
-		private final String partDefaultName;
-		private final boolean utcTimestamp;
-		private final SerializableConfiguration conf;
-		private final long limit;
+        private final String[] fullFieldNames;
+        private final DataType[] fullFieldTypes;
+        private final int[] selectedFields;
+        private final String partDefaultName;
+        private final boolean utcTimestamp;
+        private final SerializableConfiguration conf;
+        private final long limit;
 
-		private transient ParquetColumnarRowSplitReader reader;
-		private transient long currentReadCount;
+        private transient ParquetColumnarRowSplitReader reader;
+        private transient long currentReadCount;
 
-		public ParquetInputFormat(
-			Path[] paths,
-			String[] fullFieldNames,
-			DataType[] fullFieldTypes,
-			int[] selectedFields,
-			String partDefaultName,
-			long limit,
-			Configuration conf,
-			boolean utcTimestamp) {
-			super.setFilePaths(paths);
-			this.limit = limit;
-			this.partDefaultName = partDefaultName;
-			this.fullFieldNames = fullFieldNames;
-			this.fullFieldTypes = fullFieldTypes;
-			this.selectedFields = selectedFields;
-			this.conf = new SerializableConfiguration(conf);
-			this.utcTimestamp = utcTimestamp;
-		}
+        public ParquetInputFormat(
+                Path[] paths,
+                String[] fullFieldNames,
+                DataType[] fullFieldTypes,
+                int[] selectedFields,
+                String partDefaultName,
+                long limit,
+                Configuration conf,
+                boolean utcTimestamp) {
+            super.setFilePaths(paths);
+            this.limit = limit;
+            this.partDefaultName = partDefaultName;
+            this.fullFieldNames = fullFieldNames;
+            this.fullFieldTypes = fullFieldTypes;
+            this.selectedFields = selectedFields;
+            this.conf = new SerializableConfiguration(conf);
+            this.utcTimestamp = utcTimestamp;
+        }
 
-		@Override
-		public void open(FileInputSplit fileSplit) throws IOException {
-			// generate partition specs.
-			List<String> fieldNameList = Arrays.asList(fullFieldNames);
-			LinkedHashMap<String, String> partSpec = PartitionPathUtils.extractPartitionSpecFromPath(
-				fileSplit.getPath());
-			LinkedHashMap<String, Object> partObjects = new LinkedHashMap<>();
-			partSpec.forEach((k, v) -> partObjects.put(k, restorePartValueFromType(
-				partDefaultName.equals(v) ? null : v,
-				fullFieldTypes[fieldNameList.indexOf(k)])));
+        @Override
+        public void open(FileInputSplit fileSplit) throws IOException {
+            // generate partition specs.
+            List<String> fieldNameList = Arrays.asList(fullFieldNames);
+            LinkedHashMap<String, String> partSpec = PartitionPathUtils.extractPartitionSpecFromPath(
+                    fileSplit.getPath());
+            LinkedHashMap<String, Object> partObjects = new LinkedHashMap<>();
+            partSpec.forEach((k, v) -> partObjects.put(k, restorePartValueFromType(
+                    partDefaultName.equals(v) ? null : v,
+                    fullFieldTypes[fieldNameList.indexOf(k)])));
 
-			this.reader = ParquetSplitReaderUtil.genPartColumnarRowReader(
-				utcTimestamp,
-				true,
-				conf.conf(),
-				fullFieldNames,
-				fullFieldTypes,
-				partObjects,
-				selectedFields,
-				DEFAULT_SIZE,
-				new Path(fileSplit.getPath().toString()),
-				fileSplit.getStart(),
-				fileSplit.getLength());
-			this.currentReadCount = 0L;
-		}
+            this.reader = ParquetSplitReaderUtil.genPartColumnarRowReader(
+                    utcTimestamp,
+                    true,
+                    conf.conf(),
+                    fullFieldNames,
+                    fullFieldTypes,
+                    partObjects,
+                    selectedFields,
+                    DEFAULT_SIZE,
+                    new Path(fileSplit.getPath().toString()),
+                    fileSplit.getStart(),
+                    fileSplit.getLength());
+            this.currentReadCount = 0L;
+        }
 
-		@Override
-		public boolean supportsMultiPaths() {
-			return true;
-		}
+        @Override
+        public boolean supportsMultiPaths() {
+            return true;
+        }
 
-		@Override
-		public boolean reachedEnd() throws IOException {
-			if (currentReadCount >= limit) {
-				return true;
-			} else {
-				return reader.reachedEnd();
-			}
-		}
+        @Override
+        public boolean reachedEnd() throws IOException {
+            if (currentReadCount >= limit) {
+                return true;
+            } else {
+                return reader.reachedEnd();
+            }
+        }
 
-		@Override
-		public RowData nextRecord(RowData reuse) {
-			currentReadCount++;
-			return reader.nextRecord();
-		}
+        @Override
+        public RowData nextRecord(RowData reuse) {
+            currentReadCount++;
+            return reader.nextRecord();
+        }
 
-		@Override
-		public void close() throws IOException {
-			if (reader != null) {
-				this.reader.close();
-			}
-			this.reader = null;
-		}
-	}
+        @Override
+        public void close() throws IOException {
+            if (reader != null) {
+                this.reader.close();
+            }
+            this.reader = null;
+        }
+    }
 }
