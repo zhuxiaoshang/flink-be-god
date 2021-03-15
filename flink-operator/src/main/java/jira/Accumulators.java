@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 public class Accumulators {
     public static final Logger LOG = LoggerFactory.getLogger(Accumulators.class);
+
     public static void main(String[] args) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(1);
@@ -25,7 +26,7 @@ public class Accumulators {
             @Override
             public void run(SourceContext<String> ctx) throws Exception {
                 for (int i = 0; i < 1000; i++) {
-                    ctx.collect("t==="+i);
+                    ctx.collect("t===" + i);
                     Thread.sleep(1000);
                 }
             }
@@ -50,12 +51,12 @@ public class Accumulators {
         CompletableFuture<JobStatus> status = client.getJobStatus();
         LOG.info("status = " + status.get());
         System.out.println("status = " + status.get());
-        CompletableFuture<JobExecutionResult> jobExecutionResult = client.getJobExecutionResult(Accumulators.class.getClassLoader());
+        CompletableFuture<JobExecutionResult> jobExecutionResult = client.getJobExecutionResult();
 
-        System.out.println(jobExecutionResult.get(5,TimeUnit.SECONDS));
+        System.out.println(jobExecutionResult.get(5, TimeUnit.SECONDS));
 
-        CompletableFuture<Map<String, Object>> accumulators = client.getAccumulators(Accumulators.class.getClassLoader());
-       LOG.info("accus = " + accumulators.get(5, TimeUnit.SECONDS));
+        CompletableFuture<Map<String, Object>> accumulators = client.getAccumulators();
+        LOG.info("accus = " + accumulators.get(5, TimeUnit.SECONDS));
         System.out.println("accus = " + accumulators.get(5, TimeUnit.SECONDS));
     }
 }

@@ -12,6 +12,7 @@
         <module>flink-sql-connector-customized</module>
         <module>flink-jdbc-dialect-customized</module>
     </modules>
+    <packaging>pom</packaging>
 
     <groupId>zhuxiaoshang</groupId>
     <artifactId>flink-connector</artifactId>
@@ -32,18 +33,6 @@
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-elasticsearch6_2.11</artifactId>
-            <version>${flink-version}</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-api</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-filesystem_2.11</artifactId>
             <version>${flink-version}</version>
             <scope>provided</scope>
             <exclusions>
