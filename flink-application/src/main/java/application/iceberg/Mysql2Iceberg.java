@@ -39,14 +39,14 @@ import java.util.Map;
  * @create: 2021-03-10 00:03
  */
 public class Mysql2Iceberg {
-    public static final Schema SCHEMA =
+    private static final Schema SCHEMA =
             new Schema(
                     Types.NestedField.optional(1, "id", Types.IntegerType.get()),
                     Types.NestedField.optional(2, "name", Types.StringType.get()),
                     Types.NestedField.optional(3, "age", Types.IntegerType.get()),
                     Types.NestedField.optional(4, "sex", Types.StringType.get()));
-    public static final String HIVE_CATALOG = "iceberg_hive_catalog";
-    public static final String HADOOP_CATALOG = "iceberg_hadoop_catalog";
+    private static final String HIVE_CATALOG = "iceberg_hive_catalog";
+    private static final String HADOOP_CATALOG = "iceberg_hadoop_catalog";
 
     public static void main(String[] args) throws Exception {
         ParameterTool parameterTool = ParameterTool.fromArgs(args);
@@ -85,7 +85,7 @@ public class Mysql2Iceberg {
         icebergSink(src, tool, catalogLoader);
     }
 
-    private static void icebergSink_hadoop(DataStream input, ParameterTool tool) {
+    private static void icebergSink_hadoop(DataStream<RowData> src, ParameterTool tool) {
         Map<String, String> properties = new HashMap<>();
         properties.put("type", "iceberg");
         properties.put("catalog-type", "hadoop");
@@ -95,7 +95,7 @@ public class Mysql2Iceberg {
         CatalogLoader catalogLoader =
                 CatalogLoader.hadoop(HADOOP_CATALOG, new Configuration(), properties);
 
-        icebergSink(input, tool, catalogLoader);
+        icebergSink(src, tool, catalogLoader);
     }
 
     private static void icebergSink(DataStream input, ParameterTool tool, CatalogLoader loader) {
@@ -142,8 +142,7 @@ public class Mysql2Iceberg {
                 new RowDataDebeziumDeserializeSchema(
                         rowType,
                         createTypeInfo(schema.toRowDataType()),
-                        (rowData, rowKind) -> {
-                        },
+                        (rowData, rowKind) -> {},
                         ZoneId.of("Asia/Shanghai"));
         SourceFunction<RowData> sourceFunction =
                 MySQLSource.<RowData>builder()
@@ -153,9 +152,8 @@ public class Mysql2Iceberg {
                         .username(tool.get("user"))
                         .password(tool.get("password"))
                         .tableList(tool.get("db") + "." + tool.get("table"))
-                        .deserializer(deserialer) // converts SourceRecord to String
+                        .deserializer(deserialer) // converts SourceRecord to RowData
                         //                .deserializer(new StringDebeziumDeserializationSchema())
-                        // // converts SourceRecord to String
                         .build();
         return sourceFunction;
     }
@@ -167,4 +165,3 @@ public class Mysql2Iceberg {
                 TypeInfoDataTypeConverter.fromDataTypeToTypeInfo(internalDataType);
     }
 }
-
