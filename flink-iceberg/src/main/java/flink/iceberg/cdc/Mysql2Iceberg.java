@@ -1,4 +1,4 @@
-package application.iceberg;
+package flink.iceberg.cdc;
 
 import com.alibaba.ververica.cdc.connectors.mysql.MySQLSource;
 import com.alibaba.ververica.cdc.debezium.DebeziumDeserializationSchema;
@@ -132,10 +132,10 @@ public class Mysql2Iceberg {
     private static SourceFunction getMysqlCdc(ParameterTool tool) {
         TableSchema schema =
                 TableSchema.builder()
-                        .add(TableColumn.of("id", DataTypes.INT()))
-                        .add(TableColumn.of("name", DataTypes.STRING()))
-                        .add(TableColumn.of("age", DataTypes.INT()))
-                        .add(TableColumn.of("sex", DataTypes.STRING()))
+                        .add(TableColumn.physical("id", DataTypes.INT()))
+                        .add(TableColumn.physical("name", DataTypes.STRING()))
+                        .add(TableColumn.physical("age", DataTypes.INT()))
+                        .add(TableColumn.physical("sex", DataTypes.STRING()))
                         .build();
         RowType rowType = (RowType) schema.toRowDataType().getLogicalType();
         DebeziumDeserializationSchema deserialer =
