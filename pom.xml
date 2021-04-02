@@ -17,6 +17,7 @@
         <module>flink-connector</module>
         <module>flink-formats</module>
         <module>flink-sql-submit</module>
+        <module>flink-iceberg</module>
     </modules>
     <properties>
         <flink-version>1.12.0</flink-version>
