@@ -52,7 +52,7 @@ public class SparkCompaction {
         SparkSession.builder()
                 .master("local[*]")
                 .config(SQLConf.PARTITION_OVERWRITE_MODE().key(), "dynamic")
-                .config("spark.hadoop." + METASTOREURIS.varname, "thrift://di-h1-hm.1sapp.com:9083")
+                .config("spark.hadoop." + METASTOREURIS.varname, "localhost:9083")
                 .config("spark.sql.warehouse.dir", "warehouse")
                 .config("spark.executor.heartbeatInterval", "100000")
                 .config("spark.network.timeoutInterval", "100000")
