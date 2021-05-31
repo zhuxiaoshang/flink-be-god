@@ -24,6 +24,12 @@
             <version>${flink-version}</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.aliyun.oss</groupId>
+            <artifactId>aliyun-sdk-oss</artifactId>
+            <version>3.10.2</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -57,7 +63,8 @@
                         <configuration>
                             <finalName>flink-sql-submit</finalName>
                             <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>flink.sql.submit.SqlSubmit</mainClass>
                                 </transformer>
                             </transformers>

@@ -20,7 +20,7 @@
         <module>flink-iceberg</module>
     </modules>
     <properties>
-        <flink-version>1.12.0</flink-version>
+        <flink-version>1.13.1</flink-version>
     </properties>
     <dependencies>
         <dependency>
@@ -158,9 +158,9 @@
                 <version>3.0.0</version>
                 <configuration>
                     <archive>
-<!--                        <manifest>-->
-<!--                            <mainClass>flink.wordcount.FlinkWordCountMain</mainClass>-->
-<!--                        </manifest>-->
+                        <!--                        <manifest>-->
+                        <!--                            <mainClass>flink.wordcount.FlinkWordCountMain</mainClass>-->
+                        <!--                        </manifest>-->
                     </archive>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
@@ -178,5 +178,5 @@
             </plugin>
         </plugins>
     </build>
-    
+
 </project>
