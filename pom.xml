@@ -18,6 +18,9 @@
         <module>flink-formats</module>
         <module>flink-sql-submit</module>
         <module>flink-iceberg</module>
+        <module>flink-connector-nsq</module>
+        <module>flink-connector-nsq</module>
+        <module>flink-connector/flink-connector-nsq</module>
     </modules>
     <properties>
         <flink-version>1.13.1</flink-version>
