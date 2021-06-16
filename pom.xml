@@ -21,6 +21,7 @@
         <module>flink-connector-nsq</module>
         <module>flink-connector-nsq</module>
         <module>flink-connector/flink-connector-nsq</module>
+        <module>flink-formats/flink-protobuf</module>
     </modules>
     <properties>
         <flink-version>1.13.1</flink-version>
